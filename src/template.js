@@ -24,7 +24,10 @@ Template.prototype._eval_insert = function(scope, expression) {
 };
 
 Template.prototype._eval_name = function(scope, name) {
-  return scope[name];
+  if (scope.hasOwnProperty(name))
+    return scope[name];
+  else
+    throw new Error('Unknown variable: ' + name);
 };
 
 Template.prototype._eval_literal = function(scope, string) {

@@ -11,4 +11,8 @@ JS.Test.describe("inserting a value", function() { with(this) {
   it("inserts a string", function() { with(this) {
     assertEqual( "Hello, Scotland!", template.evaluate({person: "Scotland"}) )
   }})
+
+  it("throws on undefined variables", function() { with(this) {
+    assertThrows(Error, function() { template.evaluate({}) })
+  }})
 }})
