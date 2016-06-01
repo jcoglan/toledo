@@ -5,29 +5,30 @@ var Template = function(parseTree) {
 };
 
 Template.prototype.evaluate = function(locals) {
-  return this._eval(this._parseTree, locals);
+  return this._eval(locals, this._parseTree);
 };
 
-Template.prototype._eval = function(node, scope) {
-  return this['_eval_' + node[0]](node, scope);
+Template.prototype._eval = function(scope, node) {
+  var args = [scope].concat(node.slice(1));
+  return this['_eval_' + node[0]].apply(this, args);
 };
 
-Template.prototype._eval_block = function(block, scope) {
-  return block[1].map(function(el) {
-    return this._eval(el, scope);
+Template.prototype._eval_block = function(scope, statements) {
+  return statements.map(function(el) {
+    return this._eval(scope, el);
   }, this).join('');
 };
 
-Template.prototype._eval_insert = function(insert, scope) {
-  return this._eval(insert[1], scope);
+Template.prototype._eval_insert = function(scope, expression) {
+  return this._eval(scope, expression);
 };
 
-Template.prototype._eval_name = function(varname, scope) {
-  return scope[varname[1]];
+Template.prototype._eval_name = function(scope, name) {
+  return scope[name];
 };
 
-Template.prototype._eval_literal = function(literal, scope) {
-  return literal[1];
+Template.prototype._eval_literal = function(scope, string) {
+  return string;
 };
 
 module.exports = Template;
