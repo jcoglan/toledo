@@ -1,0 +1,15 @@
+{
+  "name": "toledo",
+  "version": "0.0.0",
+
+  "main": "src/toledo.js",
+
+  "devDependencies": {
+    "canopy": "*",
+    "jstest": "*"
+  },
+
+  "scripts": {
+    "test": "jstest spec/*_spec.js"
+  }
+}

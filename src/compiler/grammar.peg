@@ -1,0 +1,16 @@
+grammar Toledo
+
+block       <-  statement+                          %_block
+statement   <-  command / literal
+
+command     <-  insert
+insert      <-  l_brack _* expression _* r_brack    %_insert
+
+expression  <-  varname
+varname     <-  [A-Za-z_$] [A-Za-z0-9_$]*           %_varname
+
+literal     <-  (("\\" / !l_brack) .)+              %_literal
+
+l_brack     <-  "{{"
+r_brack     <-  "}}"
+_           <-  " "
