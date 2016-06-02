@@ -1,6 +1,6 @@
 'use strict';
 
-var stream = require('./types/stream');
+var Output = require('./output');
 
 var Template = function(parseTree) {
   this._parseTree = parseTree;
@@ -16,18 +16,11 @@ Template.prototype._eval = function(scope, node) {
 };
 
 Template.prototype._eval_block = function(scope, lineno, statements) {
-  var self = this;
+  var chunks = statements.map(function(el) {
+    return this._eval(scope, el);
+  }, this);
 
-  return new Promise(function(resolve, reject) {
-    var chunks = statements.map(function(el) {
-      var chunk = self._eval(scope, el);
-      if (stream.is(chunk)) chunk = stream.toPromise(chunk);
-      return chunk;
-    });
-    Promise.all(chunks).then(function(results) {
-      resolve(results.join(''));
-    });
-  });
+  return new Output(chunks);
 };
 
 Template.prototype._eval_insert = function(scope, lineno, expression) {
@@ -38,7 +31,7 @@ Template.prototype._eval_name = function(scope, lineno, name) {
   if (scope.hasOwnProperty(name))
     return scope[name];
   else
-    throw new Error('Line ' + lineno + ': Unknown variable: ' + name);
+    return new Error('Line ' + lineno[0] + ': Unknown variable: ' + name);
 };
 
 Template.prototype._eval_literal = function(scope, lineno, string) {

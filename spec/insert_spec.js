@@ -3,7 +3,7 @@ var toledo   = require(".."),
     streamer = require("./support/streamer")
 
 JS.Test.describe("inserting different values", function() { with(this) {
-  include(require("./support/promise_assertions"))
+  include(require("./support/stream_assertions"))
 
   before(function() { with(this) {
     this.template = toledo.compileTemplate(
@@ -13,17 +13,30 @@ JS.Test.describe("inserting different values", function() { with(this) {
 
   it("inserts a string", function(resume) { with(this) {
     var context = {person: "Scotland"}
-    assertPromiseEqual("Hello, Scotland!", template.evaluate(context), resume)
+    assertStreamEqual("Hello, Scotland!", template.evaluate(context), resume)
   }})
 
   it("inserts a promise", function(resume) { with(this) {
     var context = {person: Promise.resolve("async")}
-    assertPromiseEqual("Hello, async!", template.evaluate(context), resume)
+    assertStreamEqual("Hello, async!", template.evaluate(context), resume)
   }})
 
   it("inserts a stream", function(resume) { with(this) {
     var context = {person: streamer(["jcog", "lan"])}
-    assertPromiseEqual("Hello, jcoglan!", template.evaluate(context), resume)
+    assertStreamEqual("Hello, jcoglan!", template.evaluate(context), resume)
+  }})
+
+  it("inserts two streams in order", function(resume) { with(this) {
+    var template = toledo.compileTemplate(
+      "Hey {{ person }}, welcome to {{ city }}"
+    )
+    var context = {
+      person: streamer(["jcog", "la", "n"], 100),
+      city:   streamer(["Edin", "burgh"], 10)
+    }
+    assertStreamEqual("Hey jcoglan, welcome to Edinburgh",
+                      template.evaluate(context),
+                      resume)
   }})
 
   describe("error reporting", function() { with(this) {
@@ -32,16 +45,21 @@ JS.Test.describe("inserting different values", function() { with(this) {
         '<h1>There was a problem</h1>\n' +
         '<p>It happened because of {{ reasons }}</p>'
       )
+      this.stream = template.evaluate({})
     }})
 
     it("throws on undefined variables", function(resume) { with(this) {
-      assertPromiseRejected(template.evaluate({}), resume)
+      stream.on('error', function(error) {
+        resume(function() { assert(error) })
+      })
+      stream.on('data', function() {})
     }})
 
     it("reports the line number of errors", function(resume) { with(this) {
-      template.evaluate({}).catch(function(error) {
+      stream.on('error', function(error) {
         resume(function() { assertMatch(/line 2/i, error.message) })
       })
+      stream.on('data', function() {})
     }})
   }})
 }})
