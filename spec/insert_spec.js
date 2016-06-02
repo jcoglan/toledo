@@ -20,7 +20,22 @@ JS.Test.describe("inserting a value", function() { with(this) {
     assertPromiseEqual("Hello, async!", template.evaluate(context), resume)
   }})
 
-  it("throws on undefined variables", function(resume) { with(this) {
-    assertPromiseRejected(template.evaluate({}), resume)
+  describe("error reporting", function() { with(this) {
+    before(function() { with(this) {
+      this.template = toledo.compileTemplate(
+        '<h1>There was a problem</h1>\n' +
+        '<p>It happened because of {{ reasons }}</p>'
+      )
+    }})
+
+    it("throws on undefined variables", function(resume) { with(this) {
+      assertPromiseRejected(template.evaluate({}), resume)
+    }})
+
+    it("reports the line number of errors", function(resume) { with(this) {
+      template.evaluate({}).catch(function(error) {
+        resume(function() { assertMatch(/line 2/i, error.message) })
+      })
+    }})
   }})
 }})

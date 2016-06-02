@@ -13,7 +13,7 @@ Template.prototype._eval = function(scope, node) {
   return this['_eval_' + node[0]].apply(this, args);
 };
 
-Template.prototype._eval_block = function(scope, statements) {
+Template.prototype._eval_block = function(scope, lineno, statements) {
   var self = this;
 
   return new Promise(function(resolve, reject) {
@@ -22,18 +22,18 @@ Template.prototype._eval_block = function(scope, statements) {
   });
 };
 
-Template.prototype._eval_insert = function(scope, expression) {
+Template.prototype._eval_insert = function(scope, lineno, expression) {
   return this._eval(scope, expression);
 };
 
-Template.prototype._eval_name = function(scope, name) {
+Template.prototype._eval_name = function(scope, lineno, name) {
   if (scope.hasOwnProperty(name))
     return scope[name];
   else
-    throw new Error('Unknown variable: ' + name);
+    throw new Error('Line ' + lineno + ': Unknown variable: ' + name);
 };
 
-Template.prototype._eval_literal = function(scope, string) {
+Template.prototype._eval_literal = function(scope, lineno, string) {
   return string;
 };
 
