@@ -1,5 +1,7 @@
 'use strict';
 
+var stream = require('./types/stream');
+
 var Template = function(parseTree) {
   this._parseTree = parseTree;
 };
@@ -17,8 +19,14 @@ Template.prototype._eval_block = function(scope, lineno, statements) {
   var self = this;
 
   return new Promise(function(resolve, reject) {
-    var chunks = statements.map(function(el) { return self._eval(scope, el) });
-    Promise.all(chunks).then(function(results) { resolve(results.join('')) });
+    var chunks = statements.map(function(el) {
+      var chunk = self._eval(scope, el);
+      if (stream.is(chunk)) chunk = stream.toPromise(chunk);
+      return chunk;
+    });
+    Promise.all(chunks).then(function(results) {
+      resolve(results.join(''));
+    });
   });
 };
 

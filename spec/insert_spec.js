@@ -1,7 +1,8 @@
-var toledo = require(".."),
-    JS     = require("jstest")
+var toledo   = require(".."),
+    JS       = require("jstest"),
+    streamer = require("./support/streamer")
 
-JS.Test.describe("inserting a value", function() { with(this) {
+JS.Test.describe("inserting different values", function() { with(this) {
   include(require("./support/promise_assertions"))
 
   before(function() { with(this) {
@@ -18,6 +19,11 @@ JS.Test.describe("inserting a value", function() { with(this) {
   it("inserts a promise", function(resume) { with(this) {
     var context = {person: Promise.resolve("async")}
     assertPromiseEqual("Hello, async!", template.evaluate(context), resume)
+  }})
+
+  it("inserts a stream", function(resume) { with(this) {
+    var context = {person: streamer(["jcog", "lan"])}
+    assertPromiseEqual("Hello, jcoglan!", template.evaluate(context), resume)
   }})
 
   describe("error reporting", function() { with(this) {
