@@ -14,9 +14,12 @@ Template.prototype._eval = function(scope, node) {
 };
 
 Template.prototype._eval_block = function(scope, statements) {
-  return statements.map(function(el) {
-    return this._eval(scope, el);
-  }, this).join('');
+  var self = this;
+
+  return new Promise(function(resolve, reject) {
+    var chunks = statements.map(function(el) { return self._eval(scope, el) });
+    Promise.all(chunks).then(function(results) { resolve(results.join('')) });
+  });
 };
 
 Template.prototype._eval_insert = function(scope, expression) {
