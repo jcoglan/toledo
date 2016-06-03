@@ -30,6 +30,15 @@ Parser.prototype._insert = function(text, start, end, elements) {
   return ['insert', this._lineno(start), elements[2]];
 };
 
+Parser.prototype._access_chain = function(text, start, end, elements) {
+  var self = this;
+
+  return elements[1].elements.reduce(function(node, next) {
+    var field = next.varname;
+    return ['access', field[1], node, field[2]];
+  }, elements[0]);
+};
+
 Parser.prototype._varname = function(text, start, end, elements) {
   return ['name', this._lineno(start), text.substring(start, end)];
 };

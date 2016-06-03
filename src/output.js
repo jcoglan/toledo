@@ -36,7 +36,8 @@ Output.prototype._dequeue = function() {
     });
   }).then(function(pushed) {
     if (pushed) self._dequeue();
-  }, function() {
+  }, function(error) {
+    self.emit('error', error);
     self._chunks = [];
     self.push(null);
   });

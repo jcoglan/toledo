@@ -21,6 +21,29 @@ JS.Test.describe("inserting different values", function() { with(this) {
     assertStreamEqual("Hello, async!", template.evaluate(context), resume)
   }})
 
+  describe("nested attributes", function() { with(this) {
+    before(function() { with(this) {
+      this.template = toledo.compileTemplate(
+        "Hello, {{ person.name.first }}"
+      )
+    }})
+
+    it("navigates simple objects", function(resume) { with(this) {
+      var context = {person: {name: {first: "James"}}}
+      assertStreamEqual("Hello, James", template.evaluate(context), resume)
+    }})
+
+    it("unwraps a promise", function(resume) { with(this) {
+      var context = {person: Promise.resolve({name: {first: "James"}})}
+      assertStreamEqual("Hello, James", template.evaluate(context), resume)
+    }})
+
+    it("unwraps a nested promise", function(resume) { with(this) {
+      var context = {person: Promise.resolve({name: Promise.resolve({first: "James"})})}
+      assertStreamEqual("Hello, James", template.evaluate(context), resume)
+    }})
+  }})
+
   it("inserts a stream", function(resume) { with(this) {
     var context = {person: streamer(["jcog", "lan"])}
     assertStreamEqual("Hello, jcoglan!", template.evaluate(context), resume)

@@ -27,6 +27,15 @@ Template.prototype._eval_insert = function(scope, lineno, expression) {
   return this._eval(scope, expression);
 };
 
+Template.prototype._eval_access = function(scope, lineno, expression, field) {
+  return Promise.resolve(this._eval(scope, expression)).then(function(object) {
+    if (object && object.hasOwnProperty(field))
+      return object[field];
+    else
+      throw new Error('Line ' + lineno[0] + ': Object has no property: ' + field);
+  });
+};
+
 Template.prototype._eval_name = function(scope, lineno, name) {
   if (scope.hasOwnProperty(name))
     return scope[name];
