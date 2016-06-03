@@ -1,15 +1,19 @@
 'use strict';
 
-var Duplex  = require('stream').Duplex,
-    util    = require('util'),
-    Mutex   = require('./mutex'),
-    promise = require('./types/promise'),
-    stream  = require('./types/stream');
+var Duplex      = require('stream').Duplex,
+    PassThrough = require('stream').PassThrough,
+    util        = require('util'),
+    Mutex       = require('./mutex'),
+    promise     = require('./types/promise'),
+    stream      = require('./types/stream');
 
 var Output = function(chunks) {
   Duplex.call(this);
-  this._chunks = chunks;
-  this._mutex  = new Mutex();
+  this._mutex = new Mutex();
+
+  this._chunks = chunks.map(function(chunk) {
+    return stream.is(chunk) ? chunk.pipe(new PassThrough()) : chunk;
+  });
 };
 util.inherits(Output, Duplex);
 
