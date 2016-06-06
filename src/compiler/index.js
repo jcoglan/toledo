@@ -27,7 +27,7 @@ Parser.prototype._block = function(text, start, end, elements) {
 };
 
 Parser.prototype._insert = function(text, start, end, elements) {
-  return ['insert', this._lineno(start), elements[2]];
+  return ['insert', this._lineno(start), elements[1]];
 };
 
 Parser.prototype._access_chain = function(text, start, end, elements) {

@@ -4,7 +4,7 @@ block         <-  statement+                          %_block
 statement     <-  command / literal
 
 command       <-  insert
-insert        <-  l_brack _* expression _* r_brack    %_insert
+insert        <-  l_brack expression r_brack          %_insert
 
 expression    <-  access_chain
 access_chain  <-  varname ("." varname)*              %_access_chain
@@ -12,6 +12,6 @@ varname       <-  [A-Za-z_$] [A-Za-z0-9_$]*           %_varname
 
 literal       <-  (("\\" / !l_brack) .)+              %_literal
 
-l_brack       <-  "{{"
-r_brack       <-  "}}"
+l_brack       <-  "{{" _*
+r_brack       <-  _* "}}"
 _             <-  " "
