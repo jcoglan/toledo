@@ -26,6 +26,10 @@ Parser.prototype._block = function(text, start, end, elements) {
   return ['block', this._lineno(start), elements];
 };
 
+Parser.prototype._condition = function(text, start, end, elements) {
+  return ['cond', this._lineno(start), elements[3], elements[5]];
+};
+
 Parser.prototype._insert = function(text, start, end, elements) {
   return ['insert', this._lineno(start), elements[1]];
 };

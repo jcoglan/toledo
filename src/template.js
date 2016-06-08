@@ -23,6 +23,13 @@ Template.prototype._eval_block = function(scope, lineno, statements) {
   return new Output(chunks);
 };
 
+Template.prototype._eval_cond = function(scope, lineno, condition, block) {
+  if (this._eval(scope, condition))
+    return this._eval(scope, block);
+  else
+    return '';
+};
+
 Template.prototype._eval_insert = function(scope, lineno, expression) {
   return this._eval(scope, expression);
 };
