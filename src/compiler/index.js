@@ -27,7 +27,7 @@ Parser.prototype._block = function(text, start, end, elements) {
 };
 
 Parser.prototype._condition = function(text, start, end, elements) {
-  return ['cond', this._lineno(start), elements[3], elements[5]];
+  return ['cond', this._lineno(start), elements[3], elements[5], elements[6].block];
 };
 
 Parser.prototype._insert = function(text, start, end, elements) {
